@@ -1,1 +1,1 @@
-# Single assignment C nix expression
+# RU advanced programming exercises
