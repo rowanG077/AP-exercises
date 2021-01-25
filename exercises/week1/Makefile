@@ -5,11 +5,9 @@ CC = sac2c
 CFLAGS  = -ecc -check tc
 
 # the build target executable:
-TARGET = week1
+TARGETS = lesson1 lesson2
 
-all:
-	$(CC) $(CFLAGS) -o ./$(TARGET) $(TARGET).sac
+all: $(TARGETS)
 
-clean:
-	$(RM) $(TARGET).c
-	$(RM) $(TARGET)
+$(TARGETS): %: %.sac
+	$(CC) $(CFLAGS) -o $@ $<
