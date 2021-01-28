@@ -5,7 +5,7 @@ CC = sac2c
 CFLAGS  = -ecc -check tc
 
 # the build target executable:
-TARGETS = lesson1
+TARGETS = lesson2
 
 all: $(TARGETS)
 

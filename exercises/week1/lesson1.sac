@@ -1,8 +1,8 @@
 use StdIO: all;
 use Array: all;
 
-// Exercise 1: 
-// 	I expect an error to be thrown during compilation:
+// Exercise 1:
+// 	We expect an error to be thrown during compilation:
 // 	And it does.
 void exercise1()
 {
@@ -10,24 +10,18 @@ void exercise1()
 	print(reshape([5], [1,2,3,4,5]));
 }
 
-// Exercise 2: 
+// Exercise 2:
 // 	Maybe by letting the shape be inferred.
 void exercise2()
 {
 	print([1, 2]);
 }
 
-// Exercise 3: 
+// Exercise 3:
 // 	Of course.
 void exercise3()
 {
-	print([
-		[[0, 0], [0, 0]],
-		[[1, 0], [0, 0]],
-		[[0, 1], [0, 0]],
-		[[0, 0], [1, 0]],
-		[[0, 0], [0, 1]]
-	]);
+	print(reshape([5,2,2], genarray([4], [0,0,0,0,1])));
 }
 
 // Exercise 4:
@@ -37,7 +31,7 @@ void exercise4()
 {
 	a = [1,2,3,4];
 	b = [a,a];
-	
+
 	// a = [0,0,3,4]
 	a = modarray(modarray(a, [0], 0), [1], 0);
 	// b = [[0,0,3,4], [1,2,3,4]]
