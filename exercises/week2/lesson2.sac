@@ -41,20 +41,82 @@ use Array: all;
 // • reshape([1,1], [1]) + reshape([1], [1])?
 //   It won't compile due to shape mismatch.
 
+// Exercise 7.
+void exercise7() {
+	a = [
+		[ [1, 2], [3, 4], [5, 6], [7, 8] ], 
+		[ [9, 10], [11, 12], [13, 14], [15, 16] ]
+	];
+
+	// drop(v, a):
+	v = [1, 2, 1];
+
+	print(drop(v, a));
+	print(take((v ++ genarray([dim(a) - shape(v)[[0]]], 0)) - shape(a), a));
+
+	// tile(v, o, a):
+	v = [2, 2, 1];
+	o = [0, 2, 1];
+
+	print(tile(v, o, a));
+	print(take(v, drop(o, a)));
+
+	// shift([n], e, a):
+	n = 1;
+	e = 1337;
+
+	print(shift([n], e, a));
+
+	shiftArr = genarray(modarray(shape(a), [0], abs(n)), e);
+	selector = modarray(genarray([dim(a)], 0), [0], abs(n) - n);
+	result = tile(shape(a), selector, shiftArr ++ a ++ shiftArr);
+	print(result);
+
+	// shift([m,n], e, a)
+	m = 0;
+	n = 2;
+	e = 1337;
+
+	print(shift([m, n], e, a));
+
+	shiftArr = genarray(modarray(modarray(shape(a), [0], abs(m)), [1], abs(n) + shape(a)[1]), e);
+	print(shiftArr);
+	lArr = genarray(modarray(drop([1], shape(a)), [0], abs(n)), e);
+	print(lArr);
+	selector = [abs(m) - m, abs(n) - n] ++ genarray([dim(a) - 2], 0);
+	print(selector);
+	//ai = shiftArr ++ (f) ++ shiftArr    -- where f would be the concat of nested arrays
+	//result = tile(shape(a), selector, ai);
+	//print(result);	
+
+	// We don't know how to apply a function to each nested element in an array :(.
+
+	// rotate([n], a)
+	n = -3;
+
+	print(rotate([n], a));
+	
+	n = shape(a)[[0]] - (n % shape(a)[[0]]);
+	selector = modarray(genarray([dim(a)], 0), [0], n);
+	result = tile(shape(a), selector, a ++ a);
+	print(result);
+
+
+	// rotate([m,n], a)
+	// We don't know how to apply a function to each nested element in an array :(.
+	// The same problem as with shift.
+}
+
+void exercise8() {
+	// We don't know how to apply a function to each nested element in an array :(.
+	// The same problem as with exercise 7 shift and rotate.
+	return;
+}
+
 int main()
 {
-	print(reshape([1,1], [1]) + reshape([1], [1]));
-
-	// Wtf is going on here?????
-	// Ask on thursday
-	// a = reshape([2,0], []);
-	// iv = [2];
-	// print(a);
-	// print(dim(a));
-	// print(iv[0]);
-	// print(shape(a)[[0]]);
-
-	// print(mat[reshape([2,0], [])]);
+	exercise7();
+	exercise8();
 
 	return 0;
 }
