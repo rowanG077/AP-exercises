@@ -1,0 +1,97 @@
+use StdIO: all;
+use Array: all;
+
+/*
+ * Produces a unit matrix of n by n elements, i.e., a square matrix whose
+ * elements on the diagonal are 1, all others are 0.
+ *
+ * unit (2) == [[1,0],[0,1]]
+ * unit (3) == [[1,0,0],[0,1,0],[0,0,1]]
+ * unit (5) == [[1,0,0,0,0],[0,1,0,0,0],[0,0,1,0,0],[0,0,0,1,0],[0,0,0,0,1]
+ */
+int[.,.] unit(int n)
+{
+	return with {
+		(. <= [i,j] <= .): (i == j ? 1 : 0) ;
+	} : genarray([n, n], 0);
+}
+
+/*
+ * Reduces the leftmost axis of any non-scalar array.
+ *
+ * shape [2,3] -> shape [3]
+ * sumOuter ([[1,2,3],[4,5,6]]) == [5,7,9]
+ *
+ * shape [1,3,2]->shape [3,2]
+ * sumOuter ([[[1,2],[3,4],[5,6]]]) == [[1,2],[3,4],[5,6]]
+ *
+ * shape [2,2,3]->shape [2,3]
+ * sumOuter ([[[1,2,3],[4,5,6]],[[1,2,3],[4,5,6]]]) == [[2,4,6],[8,10,12]]
+ */
+double[*] sumOuter(double[+] a)
+{
+	return a;
+}
+
+/*
+ * In case of iv being a vector behaves like normal selection.  In case iv is of
+ * higher dimensionality, it uses the outer dimensionalities of iv to generate
+ * an entire array of hyper-planes.
+ *
+ * shape(iv) == [3,2], shape(a) == [2,3], shape (result) == [3] ++ [] = [3]
+ * overSel ( [[0,0], [1,1],[1,2]],  [[1,2,3],[4,5,6]]) == [1, 5, 6]
+ *
+ * shape(iv) == [3,1], shape(a) == [2,3], shape(result) == [3] ++ [3] = [3,3]
+ * overSel ([[0],[0],[1]],[[1,2,3],[4,5,6]]) == [[1,2,3],[1,2,3],[4,5,6]]
+ *
+ * shape(iv) == [3,1], shape(a) == [2,1,3], shape(result) == [3] ++ [1,3] == [3,1,3]
+ * overSel ([[0],[0],[1]], [[[1,2,3]],[[4,5,6]]]) == [[[1,2,3]],[[1,2,3]],[[4,5,6]]]
+ *
+ * shape(iv) == [2,1], shape(a) == [2,2,2], shape(result) == [2] ++ [2,2] == [2,2,2]
+ * overSel ([[1],[0]],[[[1,2],[3,4]],[[5,6],[7,8]]]) == [[[5,6],[7,8]],[[1,2],[3,4]]
+ */
+double[*] overSel(int[+] iv, double[*] a)
+{
+	return a;
+}
+
+/*
+ * Reduces the nth axis of the array.
+ *
+ * shape(a) == [3,2,1], shape(result) == [2,1]
+ * sumNth (0,[[[1],[2]],[[3],[4]],[[5],[6]]]) == [[9],[12]]
+ *
+ * shape(a) == [3,2,1], shape(result) == [3,1]
+ * sumNth (1,[[[1],[2]],[[3],[4]],[[5],[6]]]) == [[3],[7], [11]]
+ *
+ * shape(a) == [3,2,1], shape(result) == [3,2]
+ * sumNth (2,[[[1],[2]],[[3],[4]],[[5],[6]]]) == [[1,2],[3,4],[5,6]
+ */
+double[*] sumNth(int n, double[+] a)
+{
+	return a;
+}
+
+/*
+ * 'Pulls' the nth axis into the leftmost axis.
+ *
+ * shape(a) == [2,3], shape(result) == [3,2]
+ * transposeNthToFront (1, [[1,2,3],[4,5,6]]) == [[1,4],[2,5],[3,6]]
+ * shape(a) == [2,2,2], shape(result) == [2,2,2]
+ * transposeNthToFront (1, [[[1,2],[3,4]],[[5,6],[7,8]]]) == [[[1,2],[5,6]],[[3,4],[7,8]]]
+ * shape(a) == [2,2,2], shape(result) == [2,2,2]
+ * transposeNthToFront (2, [[[1,2],[3,4]],[[5,6],[7,8]]]) == [[[1,3],[5,7]],[[2,4],[6,8]]]
+ */
+int[+] transposeNthToFront(int n, int[+] a)
+{
+	return a;
+}
+
+int main()
+{
+	print(unit(2));
+	print(unit(3));
+	print(unit(4));
+
+	return 0;
+}
