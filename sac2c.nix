@@ -1,4 +1,4 @@
-{ stdenv, lib, bash, gcc, hwloc, cudnn, libuuid, makeWrapper, fetchurl, tree, python27 }:
+{ stdenv, lib, bash, cmake, gcc, SDL, hwloc, cudnn, libuuid, makeWrapper, fetchurl, fetchFromGitHub, tree, python27 }:
 stdenv.mkDerivation {
   pname = "sac";
   version = "v1.3.3-386-1";
@@ -14,6 +14,13 @@ stdenv.mkDerivation {
       name = "sac-stdlib";
       sha256 = "1cjy8bixm2m1dl1k0z84wd3qvhmjl9phqkzcpxcbqmnpbbadigy7";
     })
+    (fetchFromGitHub {
+      owner = "SacBase";
+      repo = "SDL";
+      rev = "fff1155028e829bbc325ac05e77de2ebbd0c3d44";
+      sha256 = "0b20pwjr1k57n7mjm6ywrnkj6gyz9mmz66m9hjjxqzvyfg64ln8b";
+      fetchSubmodules = true;
+    })
   ];
 
   sourceRoot = "sac2c";
@@ -21,11 +28,12 @@ stdenv.mkDerivation {
   phases = [ "unpackPhase" "patchPhase" "installPhase" "fixupPhase"];
 
   unpackPhase = ''
-    mkdir sac2c sac-stdlib
+    mkdir sac2c sac-stdlib sac2c/sac-sdl
     set -- $srcs
     tar -xf $1 -C sac2c
     tar -xf $2 -C sac-stdlib
     cp -r sac-stdlib/sac-stdlib-1.3-81-g930d/usr/local/* sac2c
+    cp -r $3/* sac2c/sac-sdl
   '';
 
   patchPhase = ''
@@ -66,9 +74,10 @@ stdenv.mkDerivation {
       --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [
           hwloc.lib
           cudnn
+          SDL
         ]}"
   '';
 
-  buildInputs = [ bash python27 makeWrapper ];
+  buildInputs = [ bash python27 makeWrapper SDL ];
 
 }
