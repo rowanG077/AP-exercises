@@ -2,6 +2,7 @@ module Fractal_tier1;
 
 use Structures: all;
 use Numerical: all;
+use StdIO: all;
 
 export all;
 
@@ -19,9 +20,13 @@ export all;
 inline
 complex[.,.] genComplexArray( int[2] shp, complex cmin, complex cmax)
 {
-  /**
-   * fill in here...
-   */
+  cminD = todv(cmin);
+  cmaxD = todv(cmax);
+  stepSize = (cmaxD - cminD) / [tod(shp[1]), tod(shp[0])];
+
+  return with {
+		(. <= [i,j] <= .): ( toc(cminD + tod([j, i]) * stepSize)) ;
+	} : genarray(shp, toc(0.0, 0.0));
 }
 
 
@@ -39,11 +44,11 @@ complex[.,.] genComplexArray( int[2] shp, complex cmin, complex cmax)
 inline
 int escapeTime(complex z, int depth)
 {
-  int it = 0;
-  complex c = z;
-  while (norm(c) <= 2 && it < depth) {
+  it = 0;
+  c = z;
+  while (norm(c) <= 2.0 && it < depth) {
     c = c * c + z;
-    ++it;
+    it += 1;
   }
   return it;
 }
@@ -60,7 +65,7 @@ inline
 int[*] escapeTime( complex[*] plane, int depth)
 {
   return with {
-    (. <= iv <= .) : (escapeTime(plane[iv], depth))
+    (. <= iv <= .) : (escapeTime(plane[iv], depth));
   } : genarray(shape(plane), 0);
 }
 
@@ -78,10 +83,11 @@ Color8::color[.,.] intArrayToMonochrome( int[.,.] a)
 
   a = (a * 255) / maxval(a);
 
+  // We could do this with overSel but there isn't much
+  // point. overSel uses a with loop as well.
   d = with {
         ( .<= iv <= .) : clut[ a[ iv]];
       } : genarray( shape(a), Color8::black());
 
   return( d);
 }
-

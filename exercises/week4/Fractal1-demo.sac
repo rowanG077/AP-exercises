@@ -29,10 +29,10 @@ Shape    : <  6,  4>
 int main()
 {
 
-   a = genComplexArray( [6,4], toc( [-2.2, 1.0]), toc([0.8, -1.0]));
+   a = genComplexArray( [30,30], toc( [-2.2, 1.0]), toc([0.8, -1.0]));
    print( a, 0, 2);
 
-   b = escapeTime( a, 1024);
+   b = escapeTime( a, 1025);
    print( "%5d", b);
 
    return 0;

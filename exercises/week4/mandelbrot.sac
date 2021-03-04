@@ -6,7 +6,7 @@
 
 #ifndef TIER
 /* You will need to change this as you implement the different tiers */
-#define TIER 1
+#define TIER 2
 #endif /* TIER */
 
 use Structures: all;
@@ -90,4 +90,3 @@ int main()
 
   return(0);
 }
-

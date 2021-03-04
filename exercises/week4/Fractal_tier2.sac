@@ -2,6 +2,7 @@ module Fractal_tier2;
 
 use Structures: all;
 use Numerical: all;
+use StdIO: all;
 
 export all;
 
@@ -18,9 +19,13 @@ export all;
  *****************************************************************************/
 int, complex escapeTimeAndValue(complex z, int depth)
 {
-  /**
-   * fill in here...
-   */
+  it = 0;
+  c = z;
+  while (norm(c) <= 2.0 && it < depth) {
+    c = c * c + z;
+    it += 1;
+  }
+  return (it, c);
 }
 
 /** <!--*******************************************************************-->
@@ -33,9 +38,19 @@ int, complex escapeTimeAndValue(complex z, int depth)
 inline
 int[.,.], complex[.,.] escapeTimeAndValue( complex[.,.] plane, int depth)
 {
-  /**
-   * fill in here...
-   */
+  its =  with {
+    (. <= iv <= .) {
+      it, c = escapeTimeAndValue(plane[iv], depth);
+    } : it;
+  } : genarray(shape(plane), 0);
+
+  cs =  with {
+    (. <= iv <= .) {
+      it, c = escapeTimeAndValue(plane[iv], depth);
+    } : c;
+  } : genarray(shape(plane), toc(0.0, 0.0));
+
+  return (its, cs);
 }
 
 
@@ -54,11 +69,28 @@ int[.,.], complex[.,.] escapeTimeAndValue( complex[.,.] plane, int depth)
 inline
 double[*] normalizedIterationCount(int[*] n, complex[*] zn)
 {
-  /**
-   * fill in here...
-   */
+   return with {
+     (. <= iv <= .) {
+       it = tod(n[iv]);
+       normz = norm(zn[iv]);
+       ret = 0.0;
+       if (normz > 2.0) {
+         ret = (it + 1.0) - log2(log2(normz));
+       }
+     } : ret;
+   } : genarray(shape(zn), 0.0);
 }
 
+double mapRange(double x, double inMin, double inMax, double outMin, double outMax) {
+  outRange = outMax - outMin;
+  inRange  = inMax - inMin;
+  return (x - inMin) * outRange / inRange + outMin;
+}
+
+Color8::color HsbAngleToRgb(double angle)
+{
+  return Color8::Hsb2Rgb(toi(angle), 60, 80);
+}
 
 /** <!--*******************************************************************-->
  *
@@ -75,11 +107,10 @@ double[*] normalizedIterationCount(int[*] n, complex[*] zn)
 inline
 Color8::color[.,.] doubleArrayToRGB( double[.,.] a)
 {
-  /**
-   * fill in here...
-   */
+  minValue = minval(a);
+  maxValue = maxval(a);
+
+  return with {
+    (. <= iv <= .) : (HsbAngleToRgb(mapRange(a[iv], minValue, maxValue, 0.0, 360.0)));
+  } : genarray(shape(a), Color8::black());
 }
-
-
-
-
