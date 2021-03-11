@@ -1,0 +1,132 @@
+module Fractal_tier2;
+
+use Structures: all;
+use Numerical: all;
+use StdIO: all;
+
+export all;
+
+/** <!--*******************************************************************-->
+ *
+ * @fn int, complex escapeTimeAndValue(complex z, int depth)
+ *
+ *   @brief iteratively computes c = c*c + z starting from c=z.
+ *          terminates either when |c| > 2 or depth iterations
+ *          have been performed.
+ *          NB: Besides "norm" there exists "normSq" which computes |c|^2.
+ *
+ *   @return number of iterations until termination and final complex value
+ *****************************************************************************/
+int, complex escapeTimeAndValue(complex z, int depth)
+{
+  it = 0;
+  c = z;
+
+  // We assume worst case, which is *depth* amount of iterations,
+  // since we don't know what the average case is.
+  while (norm(c) <= 2.0 && it < depth) { // depth times
+    // 5 for while condition
+    c = c * c + z; // 2
+    it += 1;
+  }
+
+  // total flops: depth * 7
+  return (it, c);
+}
+
+/** <!--*******************************************************************-->
+ *
+ * @fn int[*], complex[*] escapeTimeAndValue(complex[*] z, int depth)
+ *
+ *   @brief maps escapeTimeAndValue to an entire array of complex numbers
+ *
+ *****************************************************************************/
+inline
+int[.,.], complex[.,.] escapeTimeAndValue( complex[.,.] plane, int depth)
+{
+  its =  with {
+    (. <= iv <= .) {
+      it, c = escapeTimeAndValue(plane[iv], depth);
+    } : it;
+  } : genarray(shape(plane), 0); // shape(plane) * flops(escapeTimeAndValue)
+
+  cs =  with {
+    (. <= iv <= .) {
+      it, c = escapeTimeAndValue(plane[iv], depth);
+    } : c;
+  } : genarray(shape(plane), toc(0.0, 0.0));  // shape(plane) * flops(escapeTimeAndValue)
+
+  // total flops: 2 * shape(plane) * flops(escapeTimeAndValue)
+  //            = 2 * shape(plane) * depth * 7
+  //            = 14 * shape(plane) * depth
+  return (its, cs);
+}
+
+
+/** <!--*******************************************************************-->
+ *
+ * @fn double normalizedIterationCount(int n, complex zn)
+ *
+ *   @brief normalizes the iteration counts in "n" taking the distance of the 
+ *          corresponding final complex numbers from the origin into account.
+ *          For corresponding elements in "n" and "zn", we have:
+ *             0.0                          iff |zn| <= 2
+ *             (n+1) - log2( log2( |zn|))   otherwise
+ *
+ *   @return the normalized iteration counts
+ *****************************************************************************/
+inline
+double[*] normalizedIterationCount(int[*] n, complex[*] zn)
+{
+   return with {
+     (. <= iv <= .) {
+       it = tod(n[iv]); // 1
+       normz = norm(zn[iv]); // sqrt(a^2 + b^2) = 4
+       ret = 0.0;
+       if (normz > 2.0) { // 1
+         ret = (it + 1.0) - log2(log2(normz)); // 4
+       }
+       // total: 8
+     } : ret;
+   } : genarray(shape(zn), 0.0);
+   // total flops: shape(zn) * 8
+   
+}
+
+double mapRange(double x, double inMin, double inMax, double outMin, double outMax) {
+  outRange = outMax - outMin; // 1
+  inRange  = inMax - inMin; // 1
+  return (x - inMin) * outRange / inRange + outMin; // 4
+  // total flops: 6
+}
+
+Color8::color HsbAngleToRgb(double angle)
+{
+  return Color8::Hsb2Rgb(toi(angle), 60, 80); // 1
+  // total flops: 1
+}
+
+/** <!--*******************************************************************-->
+ *
+ * @fn color[.,.] doubleArrayToRGB( double[.,.] a)
+ *
+ *   @brief transforms an array of doubles into RGB values, by 
+ *          FIRST scaling them into values between 0.0 and 360.0, and
+ *          THEN  using them as HSB angles to choose a color.
+ *          NB: Color8 provides a function Hsb2Rgb for the actual
+ *              conversion.
+ *  
+ *   @return RGB values
+ *****************************************************************************/
+inline
+Color8::color[.,.] doubleArrayToRGB( double[.,.] a)
+{
+  minValue = minval(a); // shape(a)
+  maxValue = maxval(a); // shape(a)
+
+  return with {
+    (. <= iv <= .) : (HsbAngleToRgb(mapRange(a[iv], minValue, maxValue, 0.0, 360.0)));
+  } : genarray(shape(a), Color8::black()); // shape(a) * (flops(HsbAngleToRgb) + flops(mapRange))
+
+  // total flops: shape(a) * 7
+}
