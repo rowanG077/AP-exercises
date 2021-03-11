@@ -72,7 +72,7 @@ int main()
    // how many floating point operations every functions does and
    // use the total time of the program to calculate the final GLOPS.
    // Every line in each used function is annotated with the number
-   // of floating point operations it does.
+   // of floating point operations it performs.
    
    // flop: 1280 * 1280 * 8 + 10 = 13107210
    a = genComplexArray( [1280,1280], toc( [-2.2, 1.0]), toc([0.8, -1.0]));
@@ -95,14 +95,6 @@ int main()
    printResult(intv);
 
    destroyInterval(intv);
-
-   // single threaded
-   // runtime: 6.923974 seconds
-   // flops/s = 23525785610 flop / 6.923974 seconds = 3397728762.41 = 3.39772876241 gflop/s
-
-   // 2 threads:
-   // runtime: xx seconds
-   // flops/s = 6751846410 flops / xx
 
    return r0;
 }

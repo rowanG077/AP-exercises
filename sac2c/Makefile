@@ -28,4 +28,4 @@ sacdirs_d.h: sacdirs.h
 	@sed 's/SAC2C_POSTFIX "_p"/SAC2C_POSTFIX "_d"/' $^ > $@
 
 sacdirs_p.h: sacdirs.h
-	@sed 's/SAC2C_POSTFIX "_d"/SAC2C_POSTFIX "_p"/' $^ > $@
+	@sed 's/SAC2C_POSTFIX "_d"/SAC2C_POSTFIX "_p"/' $^ > $

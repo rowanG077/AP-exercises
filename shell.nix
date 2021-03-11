@@ -13,5 +13,7 @@ let
 in pkgs.mkShell {
   buildInputs = [
     sac2c
+    python38
+    python38Packages.matplotlib
   ];
 }
