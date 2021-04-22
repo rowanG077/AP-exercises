@@ -14,7 +14,6 @@ let
   libxcrypt = pkgs.callPackage ./nix/libxcrypt.nix { };
   sacStdLib = callPackage ./nix/stdlib.nix { inherit sacVCs; };
   sac2c = pkgs.callPackage ./nix/sac2c.nix { inherit sacStdLib sacVCs libxcrypt; };
-  # clean-cc = pkgs.callPackage ./nix/clean-cc.nix { };
 
   extensions = (with pkgs.vscode-extensions; [
     ms-vsliveshare.vsliveshare
@@ -33,7 +32,6 @@ in pkgs.mkShell {
     sac2c
     python38
     python38Packages.matplotlib
-    clean
     vscode-with-extensions
   ];
 }
