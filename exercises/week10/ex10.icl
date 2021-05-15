@@ -37,9 +37,9 @@ todosSDS = sharedStore "todosSDS" []
 
 Start w = doTasks main w
 
-main :: Task ()
+main :: Task [ToDo]
 main = (login accountsSDS -||- register accountsSDS)
-	>>- (\l. (createToDo accountsSDS todosSDS -||- listToDos todosSDS l))
+	>>- (\l. forever (createToDo accountsSDS todosSDS -||- listToDos todosSDS l))
 
 login :: (SimpleSDSLens [Login]) -> Task Login
 login sds = Title "Login" @>> enterInformation [] >>? (\login. get accountsSDS >>- verifyLogin login)
@@ -54,24 +54,24 @@ register sds = Title "Register" @>> enterInformation [] >>? return >>- updateLog
 	where
 		updateLogins login = (upd (\old. [login:old]) sds) >>- (const (return login))
 
-listToDos :: (SimpleSDSLens [ToDo]) Login -> Task ()
+listToDos :: (SimpleSDSLens [ToDo]) Login -> Task [ToDo]
 listToDos sds l =
-		Title "ToDos" @>> enterChoiceWithShared [ChooseFromList id] sds
+		Title "ToDos" @>> (watch sds >>~ selectToDo)
 		>>? removeToDo
-		>>- (const (listToDos sds l))
 	where
 		removeToDo t = upd (filter (\x. t.ToDo.todo <> x.ToDo.todo)) sds
 
-createToDo :: (SimpleSDSLens [Login]) (SimpleSDSLens [ToDo]) -> Task ()
+		selectToDo todos = enterChoice [ChooseFromList id] (myToDos todos)
+		myToDos = filter (\x. isMember l.Login.username x.ToDo.names)
+
+createToDo :: (SimpleSDSLens [Login]) (SimpleSDSLens [ToDo]) -> Task [ToDo]
 createToDo aSDS tSDS =
-		Title "Create ToDo" @>> enterToDo
+		Title "Create ToDo" @>> (get aSDS >>- addToDo)
 		>>- updateToDos
-		>>- (const (createToDo aSDS tSDS))
 	where
 		updateToDos t = upd (\ts. [t : ts]) tSDS
 
-		enterToDo = get aSDS >>- addTodo
-		addTodo accs = (enterInformation [] -&&- enterInformation [] -&&- enterMultipleChoice [ChooseFromCheckGroup (\a. a.Login.username)] accs)
+		addToDo accs = (enterInformation [] -&&- enterInformation [] -&&- enterMultipleChoice [ChooseFromCheckGroup (\a. a.Login.username)] accs)
 			>>* actions
 			>>- (\(t,(l, as)) = return { todo = t
 						   , limit = l
